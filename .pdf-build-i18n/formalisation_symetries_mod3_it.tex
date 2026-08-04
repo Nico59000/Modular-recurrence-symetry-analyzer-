@@ -1,0 +1,69 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\usepackage{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[unicode=true]{hyperref}
+\usepackage[most]{tcolorbox}
+\usepackage{lastpage}
+\usepackage{microtype}
+\geometry{top=22mm,bottom=24mm,left=24mm,right=24mm,headheight=14pt}
+\definecolor{ink}{HTML}{172033}\definecolor{accent}{HTML}{315A8A}\definecolor{accentlight}{HTML}{EAF1F8}\definecolor{rulegray}{HTML}{D7DEE8}\definecolor{muted}{HTML}{5C6678}
+\setmainfont{DejaVu Serif}\setsansfont{DejaVu Sans}\setmonofont{DejaVu Sans Mono}
+\hypersetup{colorlinks=true,linkcolor=accent,urlcolor=accent,citecolor=accent,pdftitle={Simmetrie di semiperiodo per successioni modulo 3},pdfsubject={Formalizzazione matematica e verifica algoritmica},pdfkeywords={ricorrenza, modulo 3, antiperiodicità, Fourier, matrice compagna}}
+\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small\color{muted}Simmetrie di semiperiodo modulo 3}\fancyhead[R]{\small\color{muted}Formalizzazione e verifica}\fancyfoot[C]{\small\color{muted}\thepage\,/\,\pageref*{LastPage}}\renewcommand{\headrulewidth}{0.3pt}\renewcommand{\footrulewidth}{0pt}
+\titleformat{\section}{\Large\bfseries\color{ink}}{\thesection.}{0.6em}{}[\vspace{0.2em}\color{rulegray}\titlerule]\titleformat{\subsection}{\large\bfseries\color{accent}}{\thesubsection}{0.6em}{}\titlespacing*{\section}{0pt}{2.2ex plus .5ex minus .2ex}{1.3ex}\titlespacing*{\subsection}{0pt}{1.7ex plus .4ex minus .2ex}{0.8ex}
+\setlist[itemize]{leftmargin=1.6em,itemsep=0.25em,topsep=0.4em}\setlist[enumerate]{leftmargin=1.8em,itemsep=0.25em,topsep=0.4em}\setlength{\parindent}{0pt}\setlength{\parskip}{0.55em}\allowdisplaybreaks
+\newtcolorbox{summarybox}{colback=accentlight,colframe=accent,boxrule=0.6pt,arc=2mm,left=4mm,right=4mm,top=3mm,bottom=3mm,before skip=1em,after skip=1em}\newcommand{\F}{\mathbb F}\newcommand{\Z}{\mathbb Z}\newcommand{\concat}{\mathbin{\Vert}}
+\begin{document}
+\begin{titlepage}\thispagestyle{empty}\vspace*{22mm}{\color{accent}\rule{\textwidth}{1.2pt}}\\[15mm]{\fontsize{27}{33}\selectfont\bfseries\color{ink}Simmetrie di semiperiodo per successioni modulo 3\par}\vspace{9mm}{\Large\color{accent}Formalizzazione matematica e verifica algoritmica\par}\vspace{13mm}\begin{summarybox}Questa nota distingue rigorosamente tre fenomeni spesso confusi: la negazione dei cicli, l’antiperiodicità di semiperiodo e l’inversione. Dimostra l’unico spostamento opposto di una parola primitiva non nulla, fornisce caratterizzazioni combinatorie, spettrali e matriciali e collega tali risultati a un analizzatore esaustivo di ricorrenze modulari.\end{summarybox}\vfill{\large\color{muted}Repository: \texttt{Modular-recurrence-symetry-analyzer-}\par}{\large\color{muted}Edizione PDF consolidata - 5 agosto 2026\par}\vspace{12mm}{\color{accent}\rule{\textwidth}{1.2pt}}\end{titlepage}
+\renewcommand{\contentsname}{Indice}\tableofcontents\clearpage
+\section{Oggetto}
+Questa nota formalizza i fenomeni descritti nel repository \href{https://github.com/59200/k-bonacci-pisano-finder}{\texttt{59200/k-bonacci-pisano-finder}} con le espressioni informali «periodi complementari a tre» e «autocomplementari quando vengono divisi in due».
+
+Il quadro invariante è quello delle parole periodiche sul campo \(\F_3=\{0,1,2\}\), con involuzione additiva \(\nu(x)=-x\pmod3\), cioè \(\nu(0)=0\), \(\nu(1)=2\), \(\nu(2)=1\). L’espressione «complemento a 3» deve quindi essere sostituita da \textbf{opposto additivo modulo 3} o \textbf{complemento per negazione modulo 3}. La somma decimale dei rappresentanti scelti non è sempre 3, perché 0 viene mandato in 0.
+\section{Tre proprietà distinte}
+Sia \(w=(w_0,\ldots,w_{T-1})\in\F_3^T\) una parola di periodo primitivo \(T\).
+\subsection{Coppia di periodi opposti}
+Due periodi \(w\) e \(v\) formano una coppia opposta se \(v_n=-w_n\pmod3\) per ogni \(n\). Possono appartenere a due cicli distinti.
+\subsection{Antiperiodicità di semiperiodo}
+La parola \(w\) è \textbf{antiperiodica a semiperiodo} se \(T=2h\) e \(w_{n+h}=-w_n\pmod3\) per ogni \(n\). Allora \(w=H\concat(-H)\), con \(H=(w_0,\ldots,w_{h-1})\). Esempi: \(01120221=0112\concat0221\), \(011022=011\concat022\), \(01220211=0122\concat0211\).
+\subsection{Inversione della seconda metà}
+L’operazione \(\mathcal R(a_0,\ldots,a_{h-1})=(a_{h-1},\ldots,a_0)\) è indipendente dalla negazione. Nell’esempio di Fibonacci, \(\mathcal R(0221)=1220\). Dunque \(1220\) è la \textbf{parola antipodale invertita} di \(0112\), non la seconda metà stessa.
+\section{Teorema dell’unico spostamento opposto}
+\begin{summarybox}\textbf{Teorema.} Sia \(w\) una parola primitiva non nulla di periodo \(T\). Se esiste uno spostamento \(r\) tale che \(w_{n+r}=-w_n\) per ogni \(n\), allora \(T\) è pari e \(r\equiv T/2\pmod T\).\end{summarybox}
+\subsection*{Dimostrazione}
+Applicando due volte lo spostamento si ottiene \(w_{n+2r}=w_n\). La primitività implica \(T\mid2r\). Lo spostamento \(r\) non è nullo modulo \(T\), perché una parola non nulla su \(\F_3\) non può soddisfare \(w=-w\). L’unico elemento non banale di ordine 2 del gruppo ciclico \(\Z/T\Z\) esiste soltanto quando \(T\) è pari ed è \(T/2\). \hfill\(\square\)
+\subsection*{Conseguenza}
+Un periodo primitivo non nullo è quindi: \begin{enumerate}\item inviato dalla negazione su un ciclo distinto;\item oppure invariante per negazione, e in tal caso necessariamente antiperiodico a semiperiodo.\end{enumerate} Questa dicotomia elimina la confusione tra la coppia \(00111201,00222102\) e periodi intrinsecamente antiperiodici come \(011022\).
+\section{Conseguenze combinatorie}
+Se \(w=H\concat(-H)\), allora il numero di 1 coincide con il numero di 2, il numero di 0 è pari e \(\sum_{n=0}^{T-1}w_n=0\) in \(\F_3\). Sono condizioni necessarie ma non sufficienti. Con il sollevamento centrato \(\widetilde0=0\), \(\widetilde1=1\), \(\widetilde2=-1\), il polinomio generatore fattorizza come \[W(X)=\sum_{n=0}^{2h-1}\widetilde w_nX^n=(1-X^h)\sum_{n=0}^{h-1}\widetilde w_nX^n.\]
+\section{Caratterizzazione di Fourier}
+Sia \(\widehat w(k)=\sum_{n=0}^{2h-1}\widetilde w_ne^{-2\pi i kn/(2h)}\). Allora \(w_{n+h}=-w_n\) se e solo se \(\widehat w(k)=0\) per ogni indice pari \(k\). Nel verso diretto compare il fattore \(1-(-1)^k\), nullo per \(k\) pari. Viceversa, l’annullamento di tutti i modi pari colloca la parola nel sottospazio generato dai modi dispari; lo spostamento di \(h\) vi agisce come \(-I\). Si tratta di un criterio spettrale esatto, distinto da un confronto visivo delle due metà.
+\section{Successioni lineari modulo 3}
+Consideriamo la ricorrenza di ordine \(k\), \[u_{n+k}=c_0u_n+\cdots+c_{k-1}u_{n+k-1}\pmod3.\] Lo stato è \(s_n=(u_n,\ldots,u_{n+k-1})^{\mathsf T}\) e l’evoluzione è \(s_{n+1}=Ms_n\), dove \(M\) è la matrice compagna.
+\subsection{Periodicità pura}
+Il determinante di \(M\) è, a segno vicino, \(c_0\). Su \(\F_3\), \(M\) è invertibile se e solo se \(c_0\neq0\). In tal caso ogni orbita di stato è puramente periodica. Se \(c_0=0\), può comparire un preperiodo che deve essere distinto dal ciclo.
+\subsection{Negazione dei cicli}
+La linearità dà \(M(-s)=-M(s)\). La negazione manda quindi ogni ciclo in un ciclo della stessa lunghezza. Per un ciclo non nullo vi sono solo due casi: due cicli distinti scambiati dalla negazione, oppure un unico ciclo invariante, necessariamente antiperiodico a semiperiodo. Il ciclo nullo è l’unica eccezione degenere: è fissato punto per punto e non definisce un’antiperiodo primitivo non banale.
+\subsection{Criterio per un seme}
+Per un seme \(s_0\), la relazione \(M^hs_0=-s_0\) implica \(u_{n+h}=-u_n\) per ogni uscita lineare dello stato. Quando \(s_0\neq0\) e il ciclo è primitivo, essa fornisce l’antiperiodo di semiperiodo descritto sopra.
+\subsection{Criterio uniforme}
+Tutti i semi soddisfano la stessa relazione di antiperiodo \(h\) se e solo se \(M^h=-I\). Equivalentemente, \(\mu_M(X)\mid X^h+1\) in \(\F_3[X]\); ne segue \(M^{2h}=I\).
+\section{Esempio di Fibonacci}
+Per \(M=\begin{pmatrix}0&1\\1&1\end{pmatrix}\) su \(\F_3\), si calcola \(M^4=-I\) e \(M^8=I\). Il seme \((0,1)\) genera \(01120221=0112\concat(-0112)\). La seconda metà invertita è \(\mathcal R(0221)=1220\). La coincidenza decimale \(1220=L_{14}+F_{14}=2F_{15}\) è un’identità di codifica aggiuntiva, non una conseguenza generale dell’antiperiodicità.
+\section{Generalizzazione a successioni arbitrarie modulo 3}
+Non è necessaria alcuna ipotesi di ricorrenza per analizzare una parola periodica data. Per ogni periodo primitivo si possono calcolare il ciclo delle rotazioni, l’opposto additivo, le simmetrie affini \(w_{n+r}=aw_n+b\), le simmetrie con inversione \(w_{r-n}=aw_n+b\), l’eventuale antiperiodicità e i modi di Fourier pari e dispari. La teoria matriciale interviene soltanto quando è disponibile una ricorrenza lineare dichiarata.
+\section{Estensione a un modulo generale}
+Su \(\Z/m\Z\), l’involuzione naturale resta \(x\mapsto-x\), e la definizione \(w_{n+h}=-w_n\pmod m\) rimane valida. Per \(m=2\) la negazione è l’identità e l’antiperiodicità coincide con la periodicità ordinaria; per \(m>2\) la distinzione è non banale. «Complemento a \(m\)» non è una definizione algebrica invariante; il termine corretto è «opposto additivo modulo \(m\)».
+\section{Verifica algoritmica}
+Il periodo di una ricorrenza di ordine \(k\) modulo \(m\) deve essere rilevato nello spazio finito degli stati \((\Z/m\Z)^k\), non cercando un blocco ripetuto in un prefisso arbitrariamente lungo. Lo script usa codifica compatta in base \(m\), algoritmo di Brent per un seme in tempo \(O(\mu+\lambda)\) e memoria \(O(1)\), decomposizione esatta del grafo funzionale in tempo \(O(m^k)\), parallelizzazione tra famiglie, classificazione separata dei cicli opposti e antiperiodici e controllo matriciale di \(M^h=-I\). Non richiede Mathematica né wrapper esterni.
+\section{Risultati riproducibili della scansione}
+La scansione delle quindici famiglie nominate ritrova, per la famiglia tritetranacci, coppie opposte distinte di lunghezze 24 e 8 e i periodi antiperiodici \(011022\), \(01220211\) e \(12\). Una seconda scansione considera i \(119\) vettori binari non nulli di ordini da 2 a 6: \(\sum_{k=2}^{6}(2^k-1)=119\). I risultati sono 13 famiglie con criterio globale \(M^h=-I\), 88 con almeno un ciclo antiperiodico non banale e 96 con almeno una coppia distinta di cicli opposti. I dati sono riproducibili dai file JSON e CSV del repository.
+\section*{Conclusione}\addcontentsline{toc}{section}{Conclusione}
+La negazione modulo 3 agisce come involuzione strutturale sulle parole periodiche e sui cicli delle ricorrenze lineari. Per una parola primitiva non nulla, l’invarianza può verificarsi soltanto tramite l’unico spostamento di semiperiodo. La stessa proprietà è riconoscibile mediante la fattorizzazione del polinomio generatore, l’annullamento dei modi di Fourier pari o, nel quadro lineare, la relazione matriciale \(M^h=-I\). L’analisi algoritmica separa così le simmetrie intrinseche dai semplici abbinamenti tra cicli opposti.
+\end{document}
