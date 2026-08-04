@@ -1,0 +1,92 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\usepackage{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[unicode=true]{hyperref}
+\usepackage[most]{tcolorbox}
+\usepackage{lastpage}
+\usepackage{microtype}
+
+\geometry{top=22mm,bottom=24mm,left=24mm,right=24mm,headheight=14pt}
+\definecolor{ink}{HTML}{172033}
+\definecolor{accent}{HTML}{315A8A}
+\definecolor{accentlight}{HTML}{EAF1F8}
+\definecolor{rulegray}{HTML}{D7DEE8}
+\definecolor{muted}{HTML}{5C6678}
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+\hypersetup{colorlinks=true,linkcolor=accent,urlcolor=accent,citecolor=accent,pdftitle={Half-period symmetries for sequences modulo 3},pdfsubject={Mathematical formalization and algorithmic audit},pdfkeywords={recurrence, modulo 3, antiperiodicity, Fourier, companion matrix}}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small\color{muted}Half-period symmetries modulo 3}
+\fancyhead[R]{\small\color{muted}Formalization and audit}
+\fancyfoot[C]{\small\color{muted}\thepage\,/\,\pageref*{LastPage}}
+\renewcommand{\headrulewidth}{0.3pt}\renewcommand{\footrulewidth}{0pt}
+\titleformat{\section}{\Large\bfseries\color{ink}}{\thesection.}{0.6em}{}[\vspace{0.2em}\color{rulegray}\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{accent}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{2.2ex plus .5ex minus .2ex}{1.3ex}
+\titlespacing*{\subsection}{0pt}{1.7ex plus .4ex minus .2ex}{0.8ex}
+\setlist[itemize]{leftmargin=1.6em,itemsep=0.25em,topsep=0.4em}
+\setlist[enumerate]{leftmargin=1.8em,itemsep=0.25em,topsep=0.4em}
+\setlength{\parindent}{0pt}\setlength{\parskip}{0.55em}\allowdisplaybreaks
+\newtcolorbox{summarybox}{colback=accentlight,colframe=accent,boxrule=0.6pt,arc=2mm,left=4mm,right=4mm,top=3mm,bottom=3mm,before skip=1em,after skip=1em}
+\newcommand{\F}{\mathbb F}\newcommand{\Z}{\mathbb Z}\newcommand{\concat}{\mathbin{\Vert}}
+\begin{document}
+\begin{titlepage}\thispagestyle{empty}\vspace*{22mm}
+{\color{accent}\rule{\textwidth}{1.2pt}}\\[15mm]
+{\fontsize{27}{33}\selectfont\bfseries\color{ink}Half-period symmetries for sequences modulo 3\par}
+\vspace{9mm}{\Large\color{accent}Mathematical formalization and algorithmic audit\par}\vspace{13mm}
+\begin{summarybox}This note rigorously separates three phenomena that are often conflated: cycle negation, half-period antiperiodicity, and reversal. It proves the unique opposite shift of a nonzero primitive word, gives combinatorial, spectral, and matrix characterizations, and connects these results to an exhaustive analyzer of modular recurrences.\end{summarybox}
+\vfill{\large\color{muted}Repository: \texttt{Modular-recurrence-symetry-analyzer-}\par}
+{\large\color{muted}Consolidated PDF edition - 5 August 2026\par}\vspace{12mm}{\color{accent}\rule{\textwidth}{1.2pt}}\end{titlepage}
+\renewcommand{\contentsname}{Contents}\tableofcontents\clearpage
+\section{Purpose}
+This note formalizes the phenomena described in the repository \href{https://github.com/59200/k-bonacci-pisano-finder}{\texttt{59200/k-bonacci-pisano-finder}} under the informal phrases ``periods complementary to three'' and ``self-complementary when cut in two''.
+
+The invariant setting is that of periodic words over the field \[\F_3=\{0,1,2\},\] with additive involution \[\nu(x)=-x\pmod 3,\qquad \nu(0)=0,\quad \nu(1)=2,\quad \nu(2)=1.\] The phrase ``complement to 3'' should therefore be replaced by \textbf{additive inverse modulo 3} or \textbf{complement by negation modulo 3}. The decimal sum of the chosen representatives is not always 3, because 0 is mapped to 0.
+\section{Three distinct properties}
+Let \(w=(w_0,\ldots,w_{T-1})\in\F_3^T\) be a word of primitive period \(T\).
+\subsection{Pair of opposite periods}
+Two periods \(w\) and \(v\) form an opposite pair if \[v_n=-w_n\pmod 3\] for every \(n\). They may belong to two distinct cycles.
+\subsection{Half-period antiperiodicity}
+The word \(w\) is \textbf{half-period antiperiodic} if \(T=2h\) and \[w_{n+h}=-w_n\pmod 3\] for every \(n\). It can then be written \[w=H\concat(-H),\qquad H=(w_0,\ldots,w_{h-1}).\] Examples: \[01120221=0112\concat0221,\qquad 011022=011\concat022,\qquad 01220211=0122\concat0211.\]
+\subsection{Reversal of the second half}
+The operation \[\mathcal R(a_0,\ldots,a_{h-1})=(a_{h-1},\ldots,a_0)\] is independent of negation. In the Fibonacci example, \[\mathcal R(0221)=1220.\] Thus, \(1220\) is the \textbf{reversed antipodal word} of \(0112\), not the second half itself.
+\section{The unique opposite-shift theorem}
+\begin{summarybox}\textbf{Theorem.} Let \(w\) be a nonzero primitive word of period \(T\). If there exists a shift \(r\) such that \[w_{n+r}=-w_n\] for every \(n\), then \(T\) is even and \[r\equiv \frac{T}{2}\pmod T.\]\end{summarybox}
+\subsection*{Proof}
+Applying the shift twice gives \(w_{n+2r}=w_n\). Primitivity implies \(T\mid 2r\). The shift \(r\) is not zero modulo \(T\), because a nonzero word over \(\F_3\) cannot satisfy \(w=-w\). The unique nontrivial element of order 2 in the cyclic group \(\Z/T\Z\) exists only when \(T\) is even and equals \(T/2\). \hfill\(\square\)
+\subsection*{Consequence}
+A nonzero primitive period is therefore either: \begin{enumerate}\item sent by negation to a distinct cycle;\item invariant under negation, in which case it is necessarily half-period antiperiodic.\end{enumerate} This dichotomy removes the confusion between the pair \[00111201,\quad 00222102\] and intrinsically antiperiodic periods such as \(011022\).
+\section{Combinatorial consequences}
+If \(w=H\concat(-H)\), then \[\#\{n:w_n=1\}=\#\{n:w_n=2\},\qquad \#\{n:w_n=0\}\equiv0\pmod2,\] and \[\sum_{n=0}^{T-1}w_n=0\quad\text{in }\F_3.\] These conditions are necessary but not sufficient. Using the centered lift \[\widetilde0=0,\qquad \widetilde1=1,\qquad \widetilde2=-1,\] the generating polynomial factors as \[W(X)=\sum_{n=0}^{2h-1}\widetilde w_nX^n=(1-X^h)\sum_{n=0}^{h-1}\widetilde w_nX^n.\]
+\section{Fourier characterization}
+Let \[\widehat w(k)=\sum_{n=0}^{2h-1}\widetilde w_ne^{-2\pi i kn/(2h)}.\] Then \(w_{n+h}=-w_n\) if and only if \(\widehat w(k)=0\) for every even index \(k\). When \(w_{n+h}=-w_n\), \[\widehat w(k)=\left(1-(-1)^k\right)\sum_{n=0}^{h-1}\widetilde w_ne^{-2\pi i kn/(2h)},\] so the factor vanishes for even \(k\). Conversely, if every even mode vanishes, the word lies in the subspace spanned by odd modes. A shift by \(h\) acts on mode \(k\) by \((-1)^k=-1\), hence by \(-I\) on the word. This is an exact spectral diagnostic, not merely a visual comparison of the two halves.
+\section{Linear sequences modulo 3}
+Consider an order-\(k\) recurrence \[u_{n+k}=c_0u_n+c_1u_{n+1}+\cdots+c_{k-1}u_{n+k-1}\pmod3.\] Its state is \(s_n=(u_n,\ldots,u_{n+k-1})^{\mathsf T}\), and its evolution is \(s_{n+1}=Ms_n\), where \(M\) is the companion matrix.
+\subsection{Pure periodicity}
+The determinant of \(M\) equals \(c_0\) up to sign. Over \(\F_3\), \[M\text{ is invertible}\iff c_0\neq0.\] In that case every state orbit is purely periodic. If \(c_0=0\), a preperiod may occur and must be separated from the cycle.
+\subsection{Negation of cycles}
+Linearity gives \(M(-s)=-M(s)\). Negation therefore sends each cycle to a cycle of the same length. For a nonzero cycle, only two cases are possible: \begin{itemize}\item two distinct cycles exchanged by negation;\item one invariant cycle, necessarily half-period antiperiodic.\end{itemize} The zero cycle is the unique degenerate exception: it is fixed pointwise by negation and does not define a nontrivial primitive antiperiod.
+\subsection{Criterion for one seed}
+For a seed \(s_0\), the relation \[M^hs_0=-s_0\] implies, for every linear output of the state, \[u_{n+h}=-u_n.\] When \(s_0\neq0\) and the cycle is primitive, this relation yields the half-period antiperiod described above.
+\subsection{Uniform criterion}
+All seeds satisfy the same antiperiod relation \(h\) if and only if \[M^h=-I.\] Equivalently, the minimal polynomial \(\mu_M\) satisfies \[\mu_M(X)\mid X^h+1\quad\text{in }\F_3[X],\] and therefore \(M^{2h}=I\).
+\section{Fibonacci example}
+For \[M=\begin{pmatrix}0&1\\1&1\end{pmatrix}\quad\text{over }\F_3,\] one computes \(M^4=-I\) and \(M^8=I\). The period generated by the seed \((0,1)\) is \[01120221=0112\concat(-0112).\] Its reversed second half is \(\mathcal R(0221)=1220\). The numerical coincidence, under decimal reading, \[1220=L_{14}+F_{14}=2F_{15}\] is an additional encoding identity, not a general consequence of antiperiodicity.
+\section{Generalization to arbitrary sequences modulo 3}
+No recurrence assumption is needed to analyze a given periodic word. For every primitive period one may compute: \begin{itemize}\item its rotation cycle;\item its additive inverse;\item its affine symmetries \(w_{n+r}=aw_n+b\);\item its reversal symmetries \(w_{r-n}=aw_n+b\);\item any antiperiodicity;\item its even and odd Fourier modes.\end{itemize} Matrix theory is needed only when a declared linear recurrence is available.
+\section{Extension to a general modulus}
+Over \(\Z/m\Z\), the natural involution remains \(x\mapsto-x\). The definition \[w_{n+h}=-w_n\pmod m\] remains valid. For \(m=2\), negation is the identity and antiperiodicity collapses to ordinary periodicity. For \(m>2\), the distinction is nontrivial. The phrase ``complement to \(m\)'' should not be used as an algebraic definition because it depends on the chosen integer representatives; the invariant term is ``additive inverse modulo \(m\)''.
+\section{Algorithmic audit}
+A period of an order-\(k\) recurrence modulo \(m\) must be detected on the finite state space \[(\Z/m\Z)^k,\] not by searching for a repeated block in an arbitrarily long prefix. The supplied script uses: \begin{itemize}\item compact base-\(m\) state encoding;\item Brent's algorithm for one seed, with \(O(\mu+\lambda)\) time and \(O(1)\) memory;\item exact functional-graph decomposition for all seeds, with \(O(m^k)\) time;\item parallelization across coefficient families;\item separate classification of opposite cycles and antiperiodic cycles;\item a matrix check of \(M^h=-I\).\end{itemize} No Mathematica kernel or external wrapper is required.
+\section{Reproducible scan results}
+The scan of the fifteen named repository families recovers, for the tritetranacci family, distinct opposite pairs of lengths \(24\) and \(8\), together with the antiperiodic periods \(011022\), \(01220211\), and \(12\). A second scan covers the \(119\) nonzero binary coefficient vectors of orders 2 through 6: \[\sum_{k=2}^{6}(2^k-1)=119.\] The script finds: \begin{itemize}\item \(13\) families satisfying a global criterion \(M^h=-I\);\item \(88\) families with at least one nontrivial half-antiperiodic cycle;\item \(96\) families with at least one distinct opposite-cycle pair.\end{itemize} These are exhaustive experimental results within this finite window. They are reproducible from \texttt{mod3\_symmetry\_scan\_summary.json}, \texttt{binary\_recurrence\_families\_mod3.json}, and \texttt{binary\_recurrence\_families\_mod3\_summary.csv}.
+\section*{Conclusion}\addcontentsline{toc}{section}{Conclusion}
+Negation modulo 3 acts as a structural involution on periodic words and cycles of linear recurrences. For a nonzero primitive word, invariance under this involution can occur only through the unique half-period shift. The same property is recognized equivalently by factorization of the generating polynomial, vanishing of even Fourier modes, or, in the linear setting, by a matrix relation \(M^h=-I\). The algorithmic analysis therefore separates intrinsic cycle symmetries from mere associations between opposite cycles.
+\end{document}
