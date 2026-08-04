@@ -55,7 +55,7 @@ python modular_recurrence_analyzer.py cycles \
   --json-out tritetranacci.json
 ```
 
-### Reproduire les quinze familles du dépôt étudié
+### Reproduire les quinze familles du dépôt [étudié](https://github.com/59200/k-bonacci-pisano-finder)
 
 ```bash
 python modular_recurrence_analyzer.py legacy \
