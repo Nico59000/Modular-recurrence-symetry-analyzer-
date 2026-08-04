@@ -1,0 +1,2 @@
+candidate_id,candidate_terms,query,source,oeis_number,oeis_name,oeis_terms,matched_prefix_length,target_shift,orientation,exact_prefix,review_url
+padovan:4,"2,2,0,4,2,4,6,6,10,12,16,22,28,38,50,66,88,116,154,204,270,358,474,628,832,1102,1460,1934,2562,3394,4496,5956,7890,10452,13846,18342,24298,32188,42640,56486,74828,99126,131314,173954,230440,305268,404394,535708","2,2,0,4,2,4,6,6,10,12,16,22",local_stripped,A276275,,"2,2,0,4,2,4,6,6,10,12,16,22,28,38,50,66,88,116",18,0,gcd_normalized,False,https://oeis.org/A276275

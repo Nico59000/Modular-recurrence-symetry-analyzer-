@@ -1,0 +1,14 @@
+{
+  "repository_families": 15,
+  "binary_coefficient_families_orders_2_to_6": 119,
+  "families_with_global_matrix_antiperiod": 13,
+  "families_with_at_least_one_half_antiperiodic_cycle": 88,
+  "families_with_at_least_one_distinct_negation_partner_cycle": 96,
+  "fibonacci_mod3": {
+    "period": "01120221",
+    "half": "0112",
+    "negated_half": "0221",
+    "reversed_negated_half": "1220",
+    "matrix_relation": "M^4 = -I over F_3"
+  }
+}
