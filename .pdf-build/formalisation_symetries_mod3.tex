@@ -1,0 +1,487 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage[most]{tcolorbox}
+\usepackage{lastpage}
+
+\geometry{top=22mm,bottom=24mm,left=24mm,right=24mm,headheight=14pt}
+\definecolor{ink}{HTML}{172033}
+\definecolor{accent}{HTML}{315A8A}
+\definecolor{accentlight}{HTML}{EAF1F8}
+\definecolor{rulegray}{HTML}{D7DEE8}
+\definecolor{muted}{HTML}{5C6678}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  citecolor=accent,
+  pdftitle={Symétries de demi-période pour les suites modulo 3},
+  pdfsubject={Formalisation mathématique et audit algorithmique},
+  pdfkeywords={récurrence, modulo 3, antipériodicité, Fourier, matrice compagnon}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{muted}Symétries de demi-période modulo 3}
+\fancyhead[R]{\small\color{muted}Formalisation et audit}
+\fancyfoot[C]{\small\color{muted}\thepage\,/\,\pageref*{LastPage}}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\titleformat{\section}
+  {\Large\bfseries\color{ink}}
+  {\thesection.}{0.6em}{}
+  [\vspace{0.2em}\color{rulegray}\titlerule]
+\titleformat{\subsection}
+  {\large\bfseries\color{accent}}
+  {\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{2.2ex plus .5ex minus .2ex}{1.3ex}
+\titlespacing*{\subsection}{0pt}{1.7ex plus .4ex minus .2ex}{0.8ex}
+
+\setlist[itemize]{leftmargin=1.6em,itemsep=0.25em,topsep=0.4em}
+\setlist[enumerate]{leftmargin=1.8em,itemsep=0.25em,topsep=0.4em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\allowdisplaybreaks
+
+\newtcolorbox{summarybox}{
+  colback=accentlight,
+  colframe=accent,
+  boxrule=0.6pt,
+  arc=2mm,
+  left=4mm,right=4mm,top=3mm,bottom=3mm,
+  before skip=1em,after skip=1em
+}
+\newcommand{\F}{\mathbb F}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\concat}{\mathbin{\Vert}}
+
+\begin{document}
+
+\begin{titlepage}
+\thispagestyle{empty}
+\vspace*{22mm}
+{\color{accent}\rule{\textwidth}{1.2pt}}\\[15mm]
+{\fontsize{27}{33}\selectfont\bfseries\color{ink}
+Symétries de demi-période\\[2mm]
+pour les suites modulo 3\par}
+\vspace{9mm}
+{\Large\color{accent}Formalisation mathématique et audit algorithmique\par}
+\vspace{13mm}
+\begin{summarybox}
+Cette note distingue rigoureusement trois phénomènes souvent confondus :
+la négation de cycles, l'antipériodicité de demi-période et le renversement.
+Elle établit le décalage opposé unique d'un mot primitif non nul, donne des
+caractérisations combinatoire, spectrale et matricielle, puis relie ces
+résultats à un analyseur exhaustif de récurrences modulaires.
+\end{summarybox}
+\vfill
+{\large\color{muted}Dépôt : \texttt{Modular-recurrence-symetry-analyzer-}\par}
+{\large\color{muted}Version PDF consolidée -- 5 août 2026\par}
+\vspace{12mm}
+{\color{accent}\rule{\textwidth}{1.2pt}}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\section{Objet}
+
+Cette note formalise les phénomènes décrits dans le dépôt
+\href{https://github.com/59200/k-bonacci-pisano-finder}{\texttt{59200/k-bonacci-pisano-finder}}
+sous les expressions informelles « périodes complémentaires à trois » et
+« auto-complémentaires lorsqu'elles sont coupées en deux ».
+
+Le cadre invariant est celui des mots périodiques sur le corps
+\[
+\F_3=\{0,1,2\},
+\]
+où l'involution additive est
+\[
+\nu(x)=-x\pmod 3,
+\qquad
+\nu(0)=0,\quad \nu(1)=2,\quad \nu(2)=1.
+\]
+
+L'expression « complémentaire à 3 » doit donc être remplacée par
+\textbf{opposé additif modulo 3} ou \textbf{complément par négation modulo 3}.
+La somme décimale des représentants n'est pas toujours égale à 3, puisque
+0 est envoyé sur 0.
+
+\section{Trois propriétés distinctes}
+
+Soit \(w=(w_0,\ldots,w_{T-1})\in\F_3^T\) un mot de période primitive \(T\).
+
+\subsection{Paire de périodes opposées}
+
+Deux périodes \(w\) et \(v\) sont une paire opposée si
+\[
+v_n=-w_n\pmod 3
+\]
+pour tout \(n\). Elles peuvent appartenir à deux cycles distincts.
+
+\subsection{Antipériodicité de demi-période}
+
+Le mot \(w\) est \textbf{antipériodique à demi-période} si \(T=2h\) et
+\[
+w_{n+h}=-w_n\pmod 3
+\]
+pour tout \(n\). Il s'écrit alors
+\[
+w=H\concat(-H),
+\qquad
+H=(w_0,\ldots,w_{h-1}).
+\]
+
+Exemples :
+\[
+01120221=0112\concat0221,
+\]
+\[
+011022=011\concat022,
+\]
+\[
+01220211=0122\concat0211.
+\]
+
+\subsection{Renversement de la seconde moitié}
+
+L'opération
+\[
+\mathcal R(a_0,\ldots,a_{h-1})=(a_{h-1},\ldots,a_0)
+\]
+est indépendante de la négation. Dans l'exemple de Fibonacci,
+\[
+\mathcal R(0221)=1220.
+\]
+Ainsi, \(1220\) est le \textbf{mot antipodal renversé} de \(0112\), et non
+la seconde moitié elle-même.
+
+\section{Théorème de l'unique décalage opposé}
+
+\begin{summarybox}
+\textbf{Théorème.} Soit \(w\) un mot primitif non nul de période \(T\).
+S'il existe un décalage \(r\) tel que
+\[
+w_{n+r}=-w_n
+\]
+pour tout \(n\), alors \(T\) est pair et
+\[
+r\equiv \frac{T}{2}\pmod T.
+\]
+\end{summarybox}
+
+\subsection*{Preuve}
+
+En appliquant deux fois le décalage,
+\[
+w_{n+2r}=w_n.
+\]
+La primitivité implique \(T\mid 2r\). Le décalage \(r\) n'est pas nul
+modulo \(T\), car un mot non nul sur \(\F_3\) ne satisfait pas \(w=-w\).
+L'élément non trivial d'ordre 2 du groupe cyclique \(\Z/T\Z\) existe
+uniquement lorsque \(T\) est pair et vaut \(T/2\). \hfill\(\square\)
+
+\subsection*{Conséquence}
+
+Une période primitive non nulle est soit :
+\begin{enumerate}
+\item envoyée par la négation sur un cycle distinct ;
+\item invariante par négation, auquel cas elle est nécessairement
+antipériodique à demi-période.
+\end{enumerate}
+
+Cette dichotomie corrige la confusion entre les couples
+\[
+00111201,\quad 00222102
+\]
+et les périodes intrinsèquement antipériodiques comme \(011022\).
+
+\section{Conséquences combinatoires}
+
+Si
+\[
+w=H\concat(-H),
+\]
+alors
+\[
+\#\{n:w_n=1\}=\#\{n:w_n=2\},
+\]
+\[
+\#\{n:w_n=0\}\equiv0\pmod2,
+\]
+et
+\[
+\sum_{n=0}^{T-1}w_n=0
+\quad\text{dans }\F_3.
+\]
+Ces conditions sont nécessaires, mais non suffisantes.
+
+En utilisant le relèvement centré
+\[
+\widetilde 0=0,\qquad
+\widetilde 1=1,\qquad
+\widetilde 2=-1,
+\]
+le polynôme générateur s'écrit
+\[
+W(X)
+=\sum_{n=0}^{2h-1}\widetilde w_nX^n
+=(1-X^h)\sum_{n=0}^{h-1}\widetilde w_nX^n.
+\]
+
+\section{Caractérisation de Fourier}
+
+Soit
+\[
+\widehat w(k)
+=\sum_{n=0}^{2h-1}
+\widetilde w_n e^{-2\pi i kn/(2h)}.
+\]
+Alors
+\[
+w_{n+h}=-w_n
+\]
+si et seulement si
+\[
+\widehat w(k)=0
+\]
+pour tout indice pair \(k\).
+
+\subsection*{Preuve directe}
+
+Lorsque \(w_{n+h}=-w_n\),
+\[
+\widehat w(k)
+=\left(1-(-1)^k\right)
+\sum_{n=0}^{h-1}
+\widetilde w_n e^{-2\pi i kn/(2h)}.
+\]
+Le facteur est nul pour \(k\) pair.
+
+Réciproquement, si tous les modes pairs sont nuls, le mot appartient au
+sous-espace engendré par les modes impairs. Le décalage de \(h\) agit sur
+le mode \(k\) par \((-1)^k=-1\), donc il agit par \(-I\) sur le mot.
+
+Cette caractérisation donne un diagnostic spectral exact, distinct d'une
+simple comparaison visuelle des deux moitiés.
+
+\section{Suites linéaires modulo 3}
+
+Considérons une récurrence d'ordre \(k\)
+\[
+u_{n+k}
+=c_0u_n+c_1u_{n+1}+\cdots+c_{k-1}u_{n+k-1}
+\pmod3.
+\]
+Son état est
+\[
+s_n=(u_n,\ldots,u_{n+k-1})^{\mathsf T}
+\]
+et son évolution est
+\[
+s_{n+1}=Ms_n,
+\]
+où \(M\) est la matrice compagnon.
+
+\subsection{Périodicité pure}
+
+Le déterminant de \(M\) vaut, au signe près, \(c_0\). Sur \(\F_3\),
+\[
+M\text{ est inversible}
+\iff c_0\neq0.
+\]
+Dans ce cas, toute orbite d'état est purement périodique. Si \(c_0=0\),
+une prépériode peut apparaître et doit être distinguée du cycle.
+
+\subsection{Négation des cycles}
+
+La linéarité donne
+\[
+M(-s)=-M(s).
+\]
+La négation envoie donc tout cycle sur un cycle de même longueur. Pour un
+cycle non nul, deux cas seulement sont possibles :
+\begin{itemize}
+\item deux cycles distincts échangés par négation ;
+\item un même cycle invariant, nécessairement antipériodique à demi-période.
+\end{itemize}
+Le cycle nul est l'unique exception dégénérée : il est fixé point par point
+par la négation et ne définit pas une antipériode primitive non triviale.
+
+\subsection{Critère sur une graine}
+
+Pour une graine \(s_0\), la relation
+\[
+M^hs_0=-s_0
+\]
+implique, pour toute sortie linéaire de l'état,
+\[
+u_{n+h}=-u_n.
+\]
+Lorsque \(s_0\neq0\) et que le cycle est primitif, cette relation fournit
+l'antipériode de demi-période décrite plus haut.
+
+\subsection{Critère uniforme}
+
+Toutes les graines possèdent la même relation d'antipériode \(h\) si et
+seulement si
+\[
+M^h=-I.
+\]
+Équivalemment, le polynôme minimal \(\mu_M\) vérifie
+\[
+\mu_M(X)\mid X^h+1
+\quad\text{dans }\F_3[X].
+\]
+Il en résulte
+\[
+M^{2h}=I.
+\]
+
+\section{Exemple de Fibonacci}
+
+Pour
+\[
+M=
+\begin{pmatrix}
+0&1\\
+1&1
+\end{pmatrix}
+\quad\text{sur }\F_3,
+\]
+on calcule
+\[
+M^4=-I,
+\qquad
+M^8=I.
+\]
+La période issue de la graine \((0,1)\) est donc
+\[
+01120221=0112\concat(-0112).
+\]
+Sa seconde moitié renversée est
+\[
+\mathcal R(0221)=1220.
+\]
+La coïncidence numérique, en lecture décimale,
+\[
+1220=L_{14}+F_{14}=2F_{15}
+\]
+est une identité d'encodage supplémentaire. Elle n'est pas une conséquence
+générale de l'antipériodicité.
+
+\section{Généralisation aux suites arbitraires modulo 3}
+
+Aucune hypothèse de récurrence n'est nécessaire pour analyser un mot
+périodique donné. Pour toute période primitive, on peut calculer :
+\begin{itemize}
+\item son cycle sous les rotations ;
+\item son opposé additif ;
+\item ses symétries affines \(w_{n+r}=aw_n+b\) ;
+\item ses symétries de renversement \(w_{r-n}=aw_n+b\) ;
+\item son éventuelle antipériodicité ;
+\item ses modes de Fourier pairs et impairs.
+\end{itemize}
+La théorie matricielle intervient uniquement lorsqu'une récurrence linéaire
+déclarée est disponible.
+
+\section{Extension au module général}
+
+Sur \(\Z/m\Z\), l'involution naturelle reste
+\[
+x\longmapsto-x.
+\]
+La définition
+\[
+w_{n+h}=-w_n\pmod m
+\]
+reste valable. Pour \(m=2\), la négation est l'identité et la notion
+d'antipériode se confond avec une période ordinaire. Pour \(m>2\), la
+distinction demeure non triviale.
+
+Le terme « complément à \(m\) » doit être évité comme définition
+algébrique, car il dépend du choix des représentants entiers. Le terme
+invariant est « opposé additif modulo \(m\) ».
+
+\section{Audit algorithmique}
+
+Une période d'une récurrence d'ordre \(k\) modulo \(m\) doit être détectée
+sur l'espace fini des états
+\[
+(\Z/m\Z)^k,
+\]
+et non par recherche d'un bloc répété dans un préfixe de longueur arbitraire.
+
+Le script fourni utilise :
+\begin{itemize}
+\item le codage compact des états en base \(m\) ;
+\item l'algorithme de Brent pour une graine,
+\[
+O(\mu+\lambda)\text{ temps},\qquad O(1)\text{ mémoire};
+\]
+\item une décomposition exacte du graphe fonctionnel pour toutes les graines,
+\[
+O(m^k)\text{ temps};
+\]
+\item la parallélisation entre familles de coefficients ;
+\item une classification séparée des cycles opposés et des cycles
+antipériodiques ;
+\item un contrôle matriciel de \(M^h=-I\).
+\end{itemize}
+
+Aucun noyau Mathematica ni wrapper externe n'est requis.
+
+\section{Résultats reproductibles du balayage}
+
+Le balayage des quinze familles nommées dans le dépôt retrouve notamment,
+pour la famille tritetranacci, les classes suivantes :
+\begin{itemize}
+\item paires opposées distinctes de longueurs \(24\) et \(8\) ;
+\item périodes antipériodiques \(011022\), \(01220211\) et \(12\).
+\end{itemize}
+
+Un second balayage porte sur les \(119\) vecteurs de coefficients binaires
+non nuls d'ordres \(2\) à \(6\) :
+\[
+\sum_{k=2}^{6}(2^k-1)=119.
+\]
+Les calculs produits par le script trouvent :
+\begin{itemize}
+\item \(13\) familles satisfaisant un critère global \(M^h=-I\) ;
+\item \(88\) familles possédant au moins un cycle antipériodique non trivial ;
+\item \(96\) familles possédant au moins une paire de cycles opposés distincts.
+\end{itemize}
+
+Ces nombres sont des résultats expérimentaux exhaustifs dans cette fenêtre
+finie. Ils sont reproductibles à partir des fichiers
+\texttt{mod3\_symmetry\_scan\_summary.json},
+\texttt{binary\_recurrence\_families\_mod3.json} et
+\texttt{binary\_recurrence\_families\_mod3\_summary.csv} fournis dans le dépôt.
+
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+
+La négation modulo 3 agit comme une involution structurante sur les mots
+périodiques et les cycles de récurrences linéaires. Pour un mot primitif non
+nul, son invariance par cette involution ne peut se produire que par le
+décalage unique de demi-période. Cette propriété se reconnaît de façon
+équivalente par la factorisation du polynôme générateur, l'annulation des
+modes de Fourier pairs ou, dans le cadre linéaire, par une relation matricielle
+\(M^h=-I\). L'analyse algorithmique sépare ainsi proprement les symétries
+intrinsèques des cycles et les simples associations entre cycles opposés.
+
+\end{document}
