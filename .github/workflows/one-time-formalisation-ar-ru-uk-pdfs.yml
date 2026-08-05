@@ -22,9 +22,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            texlive-xetex texlive-latex-extra texlive-lang-arabic \
-            texlive-lang-cyrillic fonts-hosny-amiri fonts-noto-core \
-            poppler-utils
+            texlive-xetex texlive-latex-extra texlive-fonts-recommended \
+            texlive-lang-arabic texlive-lang-cyrillic \
+            fonts-hosny-amiri fonts-noto-core poppler-utils
 
       - name: Restore PDF sources
         run: |
