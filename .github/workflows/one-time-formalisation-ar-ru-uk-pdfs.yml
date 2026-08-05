@@ -18,15 +18,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install XeLaTeX and language fonts
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            texlive-xetex texlive-latex-extra texlive-fonts-recommended \
-            texlive-lang-arabic texlive-lang-cyrillic \
-            fonts-hosny-amiri fonts-noto-core poppler-utils
-
-      - name: Restore PDF sources
+      - name: Restore byte-exact PDF sources
         run: |
           set -euo pipefail
           mkdir -p .pdf-build/src
@@ -36,32 +28,37 @@ jobs:
           echo '4897de4640de19e82280439e1926cff9843bd1d419a684361fa3518c313659d0  .pdf-build/sources.exact.tar.gz' | sha256sum -c -
           tar -xzf .pdf-build/sources.exact.tar.gz -C .pdf-build/src
 
-      - name: Compile all three editions
-        run: |
-          set -euo pipefail
-          cd .pdf-build/src
-          for lang in ar ru uk; do
-            xelatex -interaction=nonstopmode -halt-on-error formalisation_symetries_mod3_${lang}.tex
-            xelatex -interaction=nonstopmode -halt-on-error formalisation_symetries_mod3_${lang}.tex
-          done
-
-      - name: Verify and install PDFs
-        run: |
-          set -euo pipefail
-          for lang in ar ru uk; do
-            pdf=".pdf-build/src/formalisation_symetries_mod3_${lang}.pdf"
-            test -s "$pdf"
-            pdfinfo "$pdf" | grep -q 'Page size:.*A4'
-            pages=$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')
-            test "$pages" -ge 7
-            pdftotext "$pdf" ".pdf-build/src/${lang}.txt"
-            test -s ".pdf-build/src/${lang}.txt"
-            cp "$pdf" "formalisation_symetries_mod3_${lang}.pdf"
-          done
+      - name: Compile and verify all three editions
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: |
+            formalisation_symetries_mod3_ar.tex
+            formalisation_symetries_mod3_ru.tex
+            formalisation_symetries_mod3_uk.tex
+          working_directory: .pdf-build/src
+          latexmk_use_xelatex: true
+          texlive_version: 2026
+          os: debian
+          extra_system_packages: "fonts-hosny-amiri fonts-noto-core poppler-utils"
+          post_compile: |
+            set -euo pipefail
+            for lang in ar ru uk; do
+              pdf="formalisation_symetries_mod3_${lang}.pdf"
+              test -s "$pdf"
+              pdfinfo "$pdf" | grep -q 'Page size:.*A4'
+              pages=$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')
+              test "$pages" -ge 7
+              pdftotext "$pdf" "${lang}.txt"
+              test -s "${lang}.txt"
+            done
 
       - name: Publish final PDFs and remove temporary machinery
         run: |
           set -euo pipefail
+          for lang in ar ru uk; do
+            cp ".pdf-build/src/formalisation_symetries_mod3_${lang}.pdf" \
+               "formalisation_symetries_mod3_${lang}.pdf"
+          done
           rm -rf .pdf-build
           rm -f .github/workflows/one-time-formalisation-ar-ru-uk-pdfs.yml
           git config user.name 'github-actions[bot]'
