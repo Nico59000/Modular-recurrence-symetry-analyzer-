@@ -1,0 +1,81 @@
+name: One-time Nordic formalisation PDFs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-formalisation-nordic-pdfs.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-publish-clean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore and verify exact sources
+        run: |
+          set -euo pipefail
+          cd .pdf-build/nordic
+          echo '90994569feba505799f2f9839e10d58cdeb62edef1f648ff2ae5c8682f941927  formalisation_symetries_mod3_da.tex' | sha256sum -c -
+          echo '0601875c8001ea11b22f1f2a4ba684b3ec96cea63fa01f407f5be8f719a0e76c  formalisation_symetries_mod3_fi.tex' | sha256sum -c -
+          echo 'cc2ae015c50d0feba37fbc08fe459502cebab6781fa636111791de444d251fbb  nordic_remaining.tar.gz.b64' | sha256sum -c -
+          base64 -d nordic_remaining.tar.gz.b64 > nordic_remaining.tar.gz
+          echo '4ded71ea83fd65b9757e59820321a455675a08860d8f5165ba08968470c7bf01  nordic_remaining.tar.gz' | sha256sum -c -
+          tar -xzf nordic_remaining.tar.gz
+          echo 'de653cf76121c792db055df14c3e1e19f2b5704ba043f7bc666bb611848608a5  formalisation_symetries_mod3_sv.tex' | sha256sum -c -
+          echo '88d7b3a7c2e84c3fd62e517a42748672e59b8b866cc417f3e735ff1647a85067  formalisation_symetries_mod3_no.tex' | sha256sum -c -
+          echo '2123d9831361a4b5a8f806c1886e2d39e62e2d26b85f1031e4a6836c970bf1f1  formalisation_symetries_mod3_is.tex' | sha256sum -c -
+
+      - name: Compile and verify five Nordic editions
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: |
+            formalisation_symetries_mod3_da.tex
+            formalisation_symetries_mod3_fi.tex
+            formalisation_symetries_mod3_sv.tex
+            formalisation_symetries_mod3_no.tex
+            formalisation_symetries_mod3_is.tex
+          working_directory: .pdf-build/nordic
+          latexmk_use_xelatex: true
+          texlive_version: 2026
+          os: debian
+          extra_system_packages: "fonts-dejavu-core poppler-utils"
+          post_compile: |
+            set -euo pipefail
+            for lang in da fi sv no is; do
+              pdf="formalisation_symetries_mod3_${lang}.pdf"
+              test -s "$pdf"
+              pdfinfo "$pdf" | grep -q 'Page size:.*A4'
+              pages=$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')
+              test "$pages" -eq 7
+              pdftotext "$pdf" "${lang}.txt"
+              test -s "${lang}.txt"
+            done
+            grep -q 'Halvperiodesymmetrier' da.txt
+            grep -q 'Puolijakson' fi.txt
+            grep -q 'Halvperiodssymmetrier' sv.txt
+            grep -q 'Halvperiodesymmetrier' no.txt
+            grep -q 'Hálflotusamhverfur' is.txt
+
+      - name: Publish final PDFs and remove temporary machinery
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "$GITHUB_SHA"
+          for lang in da fi sv no is; do
+            cp ".pdf-build/nordic/formalisation_symetries_mod3_${lang}.pdf" \
+               "formalisation_symetries_mod3_${lang}.pdf"
+          done
+          rm -rf .pdf-build
+          rm -f .github/workflows/one-time-formalisation-nordic-pdfs.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Publish Danish, Finnish, Swedish, Norwegian and Icelandic formalisation PDFs'
+          git push origin main
