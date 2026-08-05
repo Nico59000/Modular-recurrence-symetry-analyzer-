@@ -1,0 +1,68 @@
+name: One-time Arabic Russian Ukrainian formalisation PDFs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-formalisation-ar-ru-uk-pdfs.yml'
+      - '.pdf-build/ar-ru-uk-sources.tar.gz.b64'
+
+permissions:
+  contents: write
+
+jobs:
+  build-publish-clean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install XeLaTeX and language fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-xetex texlive-latex-extra texlive-lang-arabic \
+            texlive-lang-cyrillic fonts-hosny-amiri fonts-noto-core \
+            poppler-utils
+
+      - name: Restore PDF sources
+        run: |
+          mkdir -p .pdf-build/src
+          base64 -d .pdf-build/ar-ru-uk-sources.tar.gz.b64 > .pdf-build/sources.tar.gz
+          tar -xzf .pdf-build/sources.tar.gz -C .pdf-build/src
+
+      - name: Compile all three editions
+        run: |
+          set -euo pipefail
+          cd .pdf-build/src
+          for lang in ar ru uk; do
+            xelatex -interaction=nonstopmode -halt-on-error formalisation_symetries_mod3_${lang}.tex
+            xelatex -interaction=nonstopmode -halt-on-error formalisation_symetries_mod3_${lang}.tex
+          done
+
+      - name: Verify and install PDFs
+        run: |
+          set -euo pipefail
+          for lang in ar ru uk; do
+            pdf=".pdf-build/src/formalisation_symetries_mod3_${lang}.pdf"
+            test -s "$pdf"
+            pdfinfo "$pdf" | grep -q 'Page size:.*A4'
+            pages=$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')
+            test "$pages" -ge 7
+            pdftotext "$pdf" ".pdf-build/src/${lang}.txt"
+            test -s ".pdf-build/src/${lang}.txt"
+            cp "$pdf" "formalisation_symetries_mod3_${lang}.pdf"
+          done
+
+      - name: Publish final PDFs and remove temporary machinery
+        run: |
+          set -euo pipefail
+          rm -rf .pdf-build
+          rm -f .github/workflows/one-time-formalisation-ar-ru-uk-pdfs.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Publish Arabic, Russian and Ukrainian formalisation PDFs'
+          git push origin main
