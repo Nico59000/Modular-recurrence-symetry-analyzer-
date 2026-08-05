@@ -5,7 +5,6 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/one-time-formalisation-ar-ru-uk-pdfs.yml'
-      - '.pdf-build/ar-ru-uk-sources.tar.gz.b64'
 
 permissions:
   contents: write
@@ -29,8 +28,12 @@ jobs:
 
       - name: Restore PDF sources
         run: |
+          set -euo pipefail
           mkdir -p .pdf-build/src
-          base64 -d .pdf-build/ar-ru-uk-sources.tar.gz.b64 > .pdf-build/sources.tar.gz
+          cat .pdf-build/chunks/part* > .pdf-build/sources.tar.gz.b64
+          echo 'd102b040a33ba8082056114d16d04ca7a2ce0ba42619930cc036577d131a6d41  .pdf-build/sources.tar.gz.b64' | sha256sum -c -
+          base64 -d .pdf-build/sources.tar.gz.b64 > .pdf-build/sources.tar.gz
+          echo '4897de4640de19e82280439e1926cff9843bd1d419a684361fa3518c313659d0  .pdf-build/sources.tar.gz' | sha256sum -c -
           tar -xzf .pdf-build/sources.tar.gz -C .pdf-build/src
 
       - name: Compile all three editions
