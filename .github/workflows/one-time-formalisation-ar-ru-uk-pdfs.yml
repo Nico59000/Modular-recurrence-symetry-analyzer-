@@ -30,8 +30,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .pdf-build/src
-          echo '4897de4640de19e82280439e1926cff9843bd1d419a684361fa3518c313659d0  .pdf-build/sources.tar.gz' | sha256sum -c -
-          tar -xzf .pdf-build/sources.tar.gz -C .pdf-build/src
+          cat .pdf-build/chunks/part* > .pdf-build/sources.exact.b64
+          echo 'd102b040a33ba8082056114d16d04ca7a2ce0ba42619930cc036577d131a6d41  .pdf-build/sources.exact.b64' | sha256sum -c -
+          base64 -d .pdf-build/sources.exact.b64 > .pdf-build/sources.exact.tar.gz
+          echo '4897de4640de19e82280439e1926cff9843bd1d419a684361fa3518c313659d0  .pdf-build/sources.exact.tar.gz' | sha256sum -c -
+          tar -xzf .pdf-build/sources.exact.tar.gz -C .pdf-build/src
 
       - name: Compile all three editions
         run: |
