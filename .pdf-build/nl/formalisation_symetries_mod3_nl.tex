@@ -1,0 +1,305 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\usepackage[dutch]{babel}
+\usepackage[a4paper,margin=23mm,headheight=15pt,footskip=18mm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{microtype}
+\usepackage{array}
+\usepackage{bookmark}
+
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+
+\definecolor{TitleBlue}{HTML}{17233A}
+\definecolor{AccentBlue}{HTML}{355F96}
+\definecolor{PaleBlue}{HTML}{EEF4FA}
+\hypersetup{
+  unicode=true,
+  colorlinks=true,
+  linkcolor=AccentBlue,
+  urlcolor=AccentBlue,
+  pdftitle={Halfperiodesymmetrieën voor rijen modulo 3},
+  pdfsubject={Wiskundige formalisering en algoritmische audit},
+  pdfkeywords={recurrence, modulo 3, antiperiodicity, Fourier, companion matrix},
+  pdfcreator={XeLaTeX}
+}
+
+\titleformat{\section}{\large\bfseries\color{TitleBlue}}{\thesection.}{0.55em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{TitleBlue}}{\thesubsection}{0.55em}{}
+\titlespacing*{\section}{0pt}{1.2ex plus .2ex}{.55ex}
+\titlespacing*{\subsection}{0pt}{.9ex plus .2ex}{.35ex}
+\setlist[itemize]{leftmargin=1.7em,itemsep=.20em,topsep=.35em}
+\setlist[enumerate]{leftmargin=1.9em,itemsep=.20em,topsep=.35em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{.48em}
+\emergencystretch=2.5em
+\setcounter{tocdepth}{2}
+\makeatletter
+\renewcommand*\l@section{\@dottedtocline{1}{0em}{2.35em}}
+\renewcommand*\l@subsection{\@dottedtocline{2}{2.35em}{3.15em}}
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{AccentBlue}Halfperiodesymmetrieën modulo 3}
+\fancyhead[R]{\small\color{AccentBlue}Formalisering en audit}
+\fancyfoot[C]{\small\color{TitleBlue}\thepage/6}
+\renewcommand{\headrulewidth}{0.35pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\oplusword}{\mathbin{\Vert}}
+\newcommand{\centerlift}[1]{\widetilde{#1}}
+
+\begin{document}
+\sloppy
+\thispagestyle{empty}
+\vspace*{20mm}
+\noindent{\color{AccentBlue}\rule{\textwidth}{0.8pt}}\\[22mm]
+{\raggedright\fontsize{24}{29}\selectfont\bfseries\color{TitleBlue}Halfperiodesymmetrieën voor\\ rijen modulo 3\par}
+\vspace{9mm}
+{\fontsize{15}{20}\selectfont\color{AccentBlue}Wiskundige formalisering en algoritmische audit\par}
+\vspace{17mm}
+\noindent\fcolorbox{AccentBlue}{PaleBlue}{%
+  \begin{minipage}{0.92\textwidth}
+  \vspace{2mm}\small Deze notitie scheidt strikt drie verschijnselen die vaak met elkaar worden verward: negatie van cycli, halfperiode-antiperiodiciteit en omkering. De notitie bewijst de unieke tegengestelde verschuiving van een niet-nul primitief woord, geeft combinatorische, spectrale en matrixkarakteriseringen en verbindt deze resultaten met een uitputtende analysator van modulaire recurrenties. \vspace{2mm}
+  \end{minipage}}
+\vfill
+{\color{TitleBlue}\small
+Repository: \textsf{Modular-recurrence-symetry-analyzer-}\\
+Geconsolideerde PDF-editie - 5 augustus 2026
+}\par
+\vspace{18mm}
+\noindent{\color{AccentBlue}\rule{\textwidth}{0.8pt}}
+\clearpage
+\setcounter{page}{1}
+
+\tableofcontents
+\clearpage
+
+\section{Doel}
+Deze notitie formaliseert de verschijnselen die in de repository \nolinkurl{59200/k-bonacci-pisano-finder} met de informele uitdrukkingen ``perioden complementair aan drie'' en ``zelf-complementair wanneer in tweeën gedeeld'' worden aangeduid.
+
+Het invariante kader bestaat uit periodieke woorden over het lichaam
+\[
+\F_3=\{0,1,2\},
+\]
+met de additieve involutie
+\[
+\nu(x)=-x\pmod 3,\qquad \nu(0)=0,\quad \nu(1)=2,\quad \nu(2)=1.
+\]
+De uitdrukking ``complement tot 3'' moet daarom worden vervangen door \emph{additieve inverse modulo 3} of \emph{complement door negatie modulo 3}. De decimale som van de gekozen representanten is niet altijd 3, omdat 0 op 0 wordt afgebeeld.
+
+\section{Drie verschillende eigenschappen}
+Laat $w=(w_0,\ldots,w_{T-1})\in\F_3^T$ een woord met primitieve periode $T$ zijn.
+
+\subsection{Paar van tegengestelde perioden}
+Twee perioden $w$ en $v$ vormen een tegengesteld paar als
+\[
+v_n=-w_n\pmod 3
+\]
+voor elke $n$. Zij kunnen tot twee verschillende cycli behoren.
+
+\subsection{Halfperiode-antiperiodiciteit}
+Het woord $w$ is halfperiode-antiperiodiek als $T=2h$ en
+\[
+w_{n+h}=-w_n\pmod 3
+\]
+voor elke $n$. Het kan dan worden geschreven als
+\[
+w=H\oplusword(-H),\qquad H=(w_0,\ldots,w_{h-1}).
+\]
+Voorbeelden:
+\[
+01120221=0112\oplusword0221,\quad 011022=011\oplusword022,\quad 01220211=0122\oplusword0211.
+\]
+
+\subsection{Omkering van de tweede helft}
+De bewerking
+\[
+R(a_0,\ldots,a_{h-1})=(a_{h-1},\ldots,a_0)
+\]
+is onafhankelijk van negatie. In het Fibonacci-voorbeeld geldt
+\[
+R(0221)=1220.
+\]
+Dus 1220 is het omgekeerde antipodale woord van 0112, niet de tweede helft zelf.
+
+\clearpage
+\section{Stelling van de unieke tegengestelde verschuiving}
+\textbf{Stelling.} Laat $w$ een niet-nul primitief woord met periode $T$ zijn. Als er een verschuiving $r$ bestaat zodat
+\[
+w_{n+r}=-w_n
+\]
+voor elke $n$, dan is $T$ even en
+\[
+r\equiv \frac{T}{2}\pmod T.
+\]
+
+\textbf{Bewijs.} Tweemaal toepassen van de verschuiving geeft $w_{n+2r}=w_n$. Uit de primitiviteit volgt $T\mid 2r$. De verschuiving $r$ is niet nul modulo $T$, omdat een niet-nul woord over $\F_3$ niet aan $w=-w$ kan voldoen. Het unieke niet-triviale element van orde 2 in de cyclische groep $\Z/T\Z$ bestaat alleen wanneer $T$ even is en is dan gelijk aan $T/2$. \hfill$\square$
+
+\textbf{Gevolg.} Een niet-nul primitieve periode wordt dus ofwel:
+\begin{enumerate}
+\item door negatie naar een andere cyclus gestuurd;
+\item door negatie invariant gelaten, en is dan noodzakelijk halfperiode-antiperiodiek.
+\end{enumerate}
+Deze dichotomie heft de verwarring op tussen het paar
+\[
+00111201,\qquad 00222102
+\]
+en intrinsiek antiperiodieke perioden zoals 011022.
+
+\section{Combinatorische gevolgen}
+Als $w=H\oplusword(-H)$, dan
+\[
+\#\{n:w_n=1\}=\#\{n:w_n=2\},\qquad \#\{n:w_n=0\}\equiv0\pmod2,
+\]
+en
+\[
+\sum_{n=0}^{T-1}w_n=0\quad\text{in }\F_3.
+\]
+Deze voorwaarden zijn noodzakelijk maar niet voldoende. Met de gecentreerde lift
+\[
+\centerlift0=0,\qquad \centerlift1=1,\qquad \centerlift2=-1
+\]
+factoriseert de voortbrengende veelterm als
+\[
+W(X)=\sum_{n=0}^{2h-1}\centerlift{w_n}X^n=(1-X^h)\sum_{n=0}^{h-1}\centerlift{w_n}X^n.
+\]
+
+\clearpage
+\section{Fourier-karakterisering}
+Laat
+\[
+\widehat w(k)=\sum_{n=0}^{2h-1}\centerlift{w_n}e^{-2\pi i kn/(2h)}.
+\]
+Dan geldt $w_{n+h}=-w_n$ precies dan wanneer $\widehat w(k)=0$ voor elke even index $k$. Wanneer $w_{n+h}=-w_n$,
+\[
+\widehat w(k)=\bigl(1-(-1)^k\bigr)\sum_{n=0}^{h-1}\centerlift{w_n}e^{-2\pi i kn/(2h)},
+\]
+zodat de factor voor even $k$ verdwijnt. Omgekeerd ligt het woord in de deelruimte die door de oneven modi wordt opgespannen als alle even modi verdwijnen. Een verschuiving met $h$ werkt op modus $k$ als $(-1)^k=-1$ en dus als $-I$ op het woord. Dit is een exacte spectrale diagnose, niet slechts een visuele vergelijking van de twee helften.
+
+\section{Lineaire rijen modulo 3}
+Beschouw een recurrentie van orde $k$,
+\[
+u_{n+k}=c_0u_n+c_1u_{n+1}+\cdots+c_{k-1}u_{n+k-1}\pmod3.
+\]
+De toestand is $s_n=(u_n,\ldots,u_{n+k-1})^T$ en de evolutie is $s_{n+1}=Ms_n$, waarbij $M$ de companionmatrix is.
+
+\subsection{Zuivere periodiciteit}
+De determinant van $M$ is, op een teken na, gelijk aan $c_0$. Over $\F_3$ geldt
+\[
+M\text{ is inverteerbaar}\iff c_0\neq0.
+\]
+In dat geval is elke toestandsbaan zuiver periodiek. Als $c_0=0$, kan een voorperiode optreden die van de cyclus moet worden gescheiden.
+
+\subsection{Negatie van cycli}
+Uit lineariteit volgt $M(-s)=-M(s)$. Negatie stuurt daarom elke cyclus naar een cyclus van dezelfde lengte. Voor een niet-nul cyclus zijn slechts twee gevallen mogelijk:
+\begin{itemize}
+\item twee verschillende cycli worden door negatie verwisseld;
+\item één invariante cyclus, noodzakelijk halfperiode-antiperiodiek.
+\end{itemize}
+De nulcyclus is de enige gedegenereerde uitzondering: hij wordt puntsgewijs door negatie gefixeerd en definieert geen niet-triviale primitieve antiperiode.
+
+\subsection{Criterium voor één begintoestand}
+Voor een begintoestand $s_0$ impliceert de relatie
+\[
+M^hs_0=-s_0
+\]
+voor elke lineaire uitlezing van de toestand dat
+\[
+u_{n+h}=-u_n.
+\]
+Wanneer $s_0\neq0$ en de cyclus primitief is, levert deze relatie de hierboven beschreven halfperiode-antiperiode.
+
+\clearpage
+\subsection{Uniform criterium}
+Alle begintoestanden voldoen aan dezelfde antiperioderelatie met verschuiving $h$ als en slechts als
+\[
+M^h=-I.
+\]
+Equivalent voldoet de minimale veelterm $\mu_M$ aan
+\[
+\mu_M(X)\mid X^h+1\qquad\text{in }\F_3[X],
+\]
+en daarom is $M^{2h}=I$.
+
+\section{Fibonacci-voorbeeld}
+Voor
+\[
+M=\begin{pmatrix}0&1\\1&1\end{pmatrix}\quad\text{over }\F_3
+\]
+volgt $M^4=-I$ en $M^8=I$. De periode die door de begintoestand $(0,1)$ wordt gegenereerd is
+\[
+01120221=0112\oplusword(-0112).
+\]
+De omgekeerde tweede helft is $R(0221)=1220$. Het numerieke toeval, bij decimale lezing,
+\[
+1220=L_{14}+F_{14}=2F_{15}
+\]
+is een aanvullende coderingsidentiteit en geen algemeen gevolg van antiperiodiciteit.
+
+\section{Generalisatie naar willekeurige rijen modulo 3}
+Voor de analyse van een gegeven periodiek woord is geen aanname van een recurrentie nodig. Voor elke primitieve periode kan men berekenen:
+\begin{itemize}
+\item de rotatiecyclus;
+\item de additieve inverse;
+\item de affiene symmetrieën $w_{n+r}=aw_n+b$;
+\item de omkeringssymmetrieën $w_{r-n}=aw_n+b$;
+\item elke antiperiodiciteit;
+\item de even en oneven Fourier-modi.
+\end{itemize}
+Matrixtheorie is alleen nodig wanneer een expliciet opgegeven lineaire recurrentie beschikbaar is.
+
+\section{Uitbreiding naar een algemene modulus}
+Over $\Z/m\Z$ blijft de natuurlijke involutie $x\mapsto-x$. De definitie
+\[
+w_{n+h}=-w_n\pmod m
+\]
+blijft geldig. Voor $m=2$ is negatie de identiteit en valt antiperiodiciteit samen met gewone periodiciteit. Voor $m>2$ is het onderscheid niet-triviaal. De uitdrukking ``complement tot $m$'' mag niet als algebraïsche definitie worden gebruikt, omdat zij afhangt van de gekozen gehele representanten; de invariante term is ``additieve inverse modulo $m$''.
+
+\clearpage
+\section{Algoritmische audit}
+Een periode van een recurrentie van orde $k$ modulo $m$ moet worden gedetecteerd in de eindige toestandsruimte
+\[
+(\Z/m\Z)^k,
+\]
+niet door in een willekeurig lange prefix naar een herhaald blok te zoeken. Het meegeleverde script gebruikt:
+\begin{itemize}
+\item compacte toestandscodering in basis $m$;
+\item Brents algoritme voor één begintoestand, met tijd $O(\mu+\lambda)$ en geheugen $O(1)$;
+\item exacte functionele-graafdecompositie voor alle begintoestanden, met tijd $O(m^k)$;
+\item parallellisatie over coëfficiëntenfamilies;
+\item afzonderlijke classificatie van tegengestelde cycli en antiperiodieke cycli;
+\item een matrixcontrole van $M^h=-I$.
+\end{itemize}
+Er is geen Mathematica-kernel of externe wrapper vereist.
+
+\section{Reproduceerbare scanresultaten}
+De scan van de vijftien benoemde repositoryfamilies vindt voor de tritetranacci-familie verschillende tegengestelde paren met lengten 24 en 8 terug, samen met de antiperiodieke perioden 011022, 01220211 en 12.
+
+Een tweede scan omvat de 119 niet-nulle binaire coëfficiëntvectoren van orden 2 tot en met 6:
+\[
+\sum_{k=2}^{6}(2^k-1)=119.
+\]
+Het script vindt:
+\begin{itemize}
+\item 13 families die voldoen aan een globaal criterium $M^h=-I$;
+\item 88 families met ten minste één niet-triviale half-antiperiodieke cyclus;
+\item 96 families met ten minste één onderscheiden paar van tegengestelde cycli.
+\end{itemize}
+Dit zijn uitputtende experimentele resultaten binnen dit eindige venster. Zij zijn reproduceerbaar vanuit \nolinkurl{mod3_symmetry_scan_summary.json}, \nolinkurl{binary_recurrence_families_mod3.json} en \nolinkurl{binary_recurrence_families_mod3_summary.csv}.
+
+\section*{Conclusie}
+\addcontentsline{toc}{section}{Conclusie}
+Negatie modulo 3 werkt als een structurele involutie op periodieke woorden en cycli van lineaire recurrenties. Voor een niet-nul primitief woord kan invariantie onder deze involutie alleen optreden via de unieke halfperiodeverschuiving. Dezelfde eigenschap wordt equivalent herkend door factorisatie van de voortbrengende veelterm, het verdwijnen van even Fourier-modi of, in de lineaire context, door de matrixrelatie $M^h=-I$. De algoritmische analyse scheidt daardoor intrinsieke cyclussymmetrieën van loutere associaties tussen tegengestelde cycli.
+
+\end{document}
