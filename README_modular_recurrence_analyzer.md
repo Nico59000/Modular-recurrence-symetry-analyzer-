@@ -1,7 +1,7 @@
 # Modular Recurrence Analyzer
 
 Analyseur autonome en Python des périodes et symétries de suites modulo
-un entier, avec spécialisation des diagnostics à \(\mathbb F_3\).
+un entier, avec spécialisation des diagnostics à $\mathbb F_3$.
 
 ## Prérequis
 
@@ -87,13 +87,13 @@ python modular_recurrence_analyzer.py scan \
 
 - prépériode et période d'état ;
 - mot périodique primitif ;
-- opposition modulo \(m\) ;
+- opposition modulo $m$ ;
 - antipériodicité de demi-période ;
 - paires de cycles opposés ;
 - renversement de la seconde moitié ;
 - symétries affines et diédriques ;
 - test spectral pair/impair modulo 3 ;
-- recherche de \(M^h=-I\).
+- recherche de $M^h=-I$.
 
 ## Tests
 
@@ -103,7 +103,7 @@ python -m unittest -v test_modular_recurrence_analyzer.py
 
 ## Limites
 
-La commande `cycles` explore exactement \(m^k\) états et impose donc une
+La commande `cycles` explore exactement $m^k$ états et impose donc une
 limite configurable. Pour les ordres beaucoup plus grands, une méthode
 par factorisation du polynôme caractéristique sur un corps fini est plus
 adaptée que l'énumération exhaustive.
