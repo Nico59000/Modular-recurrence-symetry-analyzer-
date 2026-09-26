@@ -108,7 +108,7 @@ limite configurable. Pour les ordres beaucoup plus grands, une méthode
 par factorisation du polynôme caractéristique sur un corps fini est plus
 adaptée que l'énumération exhaustive.
 
-# Candidate extraction and OEIS comparison
+# Candidate extraction and OEIS comparison (EN)
 
 Two additional scripts extend the modular-period analyzer.
 
